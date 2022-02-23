@@ -1,12 +1,12 @@
 FROM node:14@sha256:d938c1761e3afbae9242848ffbb95b9cc1cb0a24d889f8bd955204d347a7266e
 
-# renovate: datasource=github-releases depName=azure-cli versioning=loose
+# renovate: datasource=github-releases depName=Azure/azure-cli versioning=loose
 ENV AZURE_CLI_VERSION="2.33.1-1~focal"
 
 # renovate: datasource=github-releases depName=hashicorp/terraform versioning=loose
 ENV TERRAFORM_VERSION="1.1.6"
 
-# renovate: datasource=repology depName=ubuntu_20_04/ssh versioning=loose
+# renovate: datasource=repology depName=ubuntu_20_04/openssh versioning=loose
 ENV SSH_VERSION="1:8.2p1-4ubuntu0.4"
 
 # renovate: datasource=repology depName=ubuntu_20_04/git versioning=loose
