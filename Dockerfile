@@ -1,9 +1,9 @@
 FROM node:14@sha256:d938c1761e3afbae9242848ffbb95b9cc1cb0a24d889f8bd955204d347a7266e
 
-ENV AZURE_CLI_VERSION="2.33.1-1~focal"
-ENV TERRAFORM_VERSION="1.1.6"
-ENV SSH_VERSION="1:8.2p1-4ubuntu0.4"
-ENV GIT_VERSION="1:2.25.1-1ubuntu3.2"
+ENV AZURE_CLI_VERSION="2.33.1-1~focal" # github-tags/nodejs/node&versioning=node
+ENV TERRAFORM_VERSION="1.1.6" # github-tags/nodejs/node&versioning=node
+ENV SSH_VERSION="1:8.2p1-4ubuntu0.4" # github-tags/nodejs/node&versioning=node
+ENV GIT_VERSION="1:2.25.1-1ubuntu3.2" # github-tags/nodejs/node&versioning=node
 
 RUN apt update && \
     apt install -y ca-certificates curl apt-transport-https lsb-release gnupg && \
