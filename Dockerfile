@@ -1,0 +1,3 @@
+FROM node:14@sha256:d938c1761e3afbae9242848ffbb95b9cc1cb0a24d889f8bd955204d347a7266e
+
+RUN touch /example.txt
