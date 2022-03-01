@@ -16,7 +16,7 @@
   ],
   "packageRules": [
     {
-      "packageNames": ["hashicorp/renovate"],
+      "packageNames": ["hashicorp/terraform"],
       "extractVersion": "^v(?<version>.*)$"
     }
   ]
