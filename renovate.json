@@ -13,5 +13,11 @@
       ],
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
     }
+  ],
+  "packageRules": [
+    {
+      "packageNames": ["hashicorp/renovate"],
+      "extractVersion": "^v(?<version>.*)$"
+    }
   ]
 }
