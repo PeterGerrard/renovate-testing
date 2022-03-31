@@ -1,4 +1,4 @@
-FROM node:14@sha256:d938c1761e3afbae9242848ffbb95b9cc1cb0a24d889f8bd955204d347a7266e
+FROM node:17@sha256:0b553d28086d90b9b3be3339beb97401f8c0a83c17230a37ad99ff88fdad3b3f
 
 # renovate: datasource=github-releases depName=Azure/azure-cli versioning=loose
 ENV AZURE_CLI_VERSION="2.33.1-1~focal"
