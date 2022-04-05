@@ -11,6 +11,7 @@
     ]
   },
   "includePaths": [
+    "Dockerfile",
     "src/**",
     ".teamcity/**"
   ],
