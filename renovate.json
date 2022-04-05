@@ -2,22 +2,54 @@
   "extends": [
     "config:base"
   ],
-  "regexManagers": [
-    {
-      "fileMatch": [
-        "(^|/|\\.)Dockerfile$",
-        "(^|/)Dockerfile\\.[^/]*$"
-      ],
-      "matchStrings": [
-        "#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=\"(?<currentValue>.*)\"\\s"
-      ],
-      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
-    }
+  "nuget": {
+    "enabled": true,
+    "versionScheme": "nuget",
+    "registryUrls": [
+      "https://api.nuget.org/v3/index.json",
+      "https://red-gate.pkgs.visualstudio.com/_packaging/Main/nuget/v3/index.json"
+    ]
+  },
+  "includePaths": [
+    "src/**",
+    ".teamcity/**"
   ],
+  "timezone": "Europe/London",
+  "prHourlyLimit": 3,
+  "prConcurrentLimit": 3,
+  "automergeType": "pr",
+  "automergeStrategy": "rebase",
+  "requiredStatusChecks": [],
+  "masterIssue": true,
+  "labels": [
+    "type: renovate",
+    "merge-when-green"
+  ],
+  "minor": {
+    "labels": [
+      "type: renovate",
+      "merge-when-green"
+    ]
+  },
+  "patch": {
+    "labels": [
+      "type: renovate",
+      "merge-when-green"
+    ]
+  },
   "packageRules": [
     {
-      "packageNames": ["hashicorp/terraform"],
-      "extractVersion": "^v(?<version>.*)$"
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "automerge": true
     }
-  ]
+  ],
+  "pin": {
+    "automerge": true
+  },
+  "dependencyDashboard": true
 }
