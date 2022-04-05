@@ -1,28 +1,91 @@
-FROM node:14@sha256:d938c1761e3afbae9242848ffbb95b9cc1cb0a24d889f8bd955204d347a7266e
+# ---------------------------------- Base (tools and packages installed) ------------------------------
 
-# renovate: datasource=github-releases depName=Azure/azure-cli versioning=loose
-ENV AZURE_CLI_VERSION="2.33.1-1~focal"
+FROM mcr.microsoft.com/dotnet/sdk:6.0.101-alpine3.14 AS rgcompare_base
 
-# renovate: datasource=github-releases depName=hashicorp/terraform versioning=loose
-ENV TERRAFORM_VERSION="1.1.5"
+ARG TEAMCITY_VERSION
+ARG TEAMCITY_PROJECT_NAME
+ARG BUILD_VERSION
+ARG MAJ_MIN_VERSION
+ARG BUILD_NUMBER
+ARG NUGET_FEED_PASSWORD
 
-# renovate: datasource=repology depName=ubuntu_20_04/openssh versioning=loose
-ENV SSH_VERSION="1:8.2p1-4ubuntu0.4"
+WORKDIR /app
 
-# renovate: datasource=repology depName=ubuntu_20_04/git versioning=loose
-ENV GIT_VERSION="1:2.25.1-1ubuntu3.2"
+RUN echo hello
 
-RUN apt update && \
-    apt install -y ca-certificates curl apt-transport-https lsb-release gnupg && \
-    curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg && \
-    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/azure-cli.list && \
-    curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
-    echo "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/hashicorp.list && \
-    apt update && \
-    apt install -y \
-    azure-cli="$AZURE_CLI_VERSION" \
-    terraform="$TERRAFORM_VERSION" \
-    ssh="$SSH_VERSION" \
-    git="$GIT_VERSION"
 
-RUN touch /example.txt
+# ---------------------------------- Build ------------------------------
+
+FROM rgcompare_base AS rgcompare_build
+
+COPY . .
+
+RUN ./docker/create-nuget-package.sh
+
+RUN mkdir /scan-artifacts/ && \
+    find /app/src -name 'project.assets.json' \
+        -print \
+        -exec cp --parents \{\} /scan-artifacts/ \;
+
+# ---------------------------------- Mutation test ----------------------------------
+
+FROM rgcompare_base AS rgcompare_mutation_test
+
+RUN dotnet tool install -g dotnet-stryker --version 1.2.1
+ENV PATH="/root/.dotnet/tools:${PATH}"
+
+COPY . .
+
+# ---------------------------------- Publish NuGet ----------------------------------
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0.101-alpine3.14 AS rgcompare_publish_nuget
+
+WORKDIR /app
+
+# hadolint ignore=DL3018
+RUN apk add bash
+
+COPY ./.nupkg ./.nupkg
+COPY ./docker/push-nuget-package.sh ./docker/push-nuget-package.sh
+
+# ---------------------------------- Published Image  ----------------------------------
+
+FROM mcr.microsoft.com/dotnet/runtime:6.0.1-alpine3.14 AS rgcompare_published_image
+
+WORKDIR /app
+
+COPY ./.published .
+
+ENTRYPOINT [ "dotnet", "./RgCompare.Cli.dll" ]
+
+# ---------------------------------- Scan ----------------------------------
+
+FROM node:lts-alpine3.14 AS rgcompare_scan
+
+WORKDIR /app
+
+# hadolint ignore=DL3018
+RUN apk add bash
+
+RUN npm install -g snyk@1.874.0
+
+COPY ./.snyk ./.snyk
+COPY ./docker/run-snyk-monitor-current.sh ./docker/run-snyk-monitor-current.sh
+COPY ./docker/run-snyk-monitor-release.sh ./docker/run-snyk-monitor-release.sh
+COPY ./docker/run-snyk-test.sh ./docker/run-snyk-test.sh
+
+# ---------------------------------- License check ----------------------------------
+
+FROM alpine:3.15.0 as rgcompare_license_report
+
+# hadolint ignore=DL3018
+RUN apk update \
+    && apk add --no-cache \
+        curl \
+        jq \
+        bash
+
+WORKDIR /app
+
+COPY ./licenses.csv ./licenses.csv
+COPY ./docker/check-license-report.sh ./docker/check-license-report.sh
