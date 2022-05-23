@@ -76,7 +76,7 @@ COPY ./docker/run-snyk-test.sh ./docker/run-snyk-test.sh
 
 # ---------------------------------- License check ----------------------------------
 
-FROM alpine:3.15.0 as rgcompare_license_report
+FROM alpine:3.16.0 as rgcompare_license_report
 
 # hadolint ignore=DL3018
 RUN apk update \
