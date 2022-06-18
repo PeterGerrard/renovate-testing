@@ -50,7 +50,7 @@ COPY ./docker/push-nuget-package.sh ./docker/push-nuget-package.sh
 
 # ---------------------------------- Published Image  ----------------------------------
 
-FROM mcr.microsoft.com/dotnet/runtime:6.0.1-alpine3.14 AS rgcompare_published_image
+FROM mcr.microsoft.com/dotnet/runtime:6.0.6-alpine3.14 AS rgcompare_published_image
 
 WORKDIR /app
 
