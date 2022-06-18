@@ -1,6 +1,6 @@
 # ---------------------------------- Base (tools and packages installed) ------------------------------
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0.101-alpine3.14 AS rgcompare_base
+FROM mcr.microsoft.com/dotnet/sdk:6.0.301-alpine3.14 AS rgcompare_base
 
 ARG TEAMCITY_VERSION
 ARG TEAMCITY_PROJECT_NAME
@@ -38,7 +38,7 @@ COPY . .
 
 # ---------------------------------- Publish NuGet ----------------------------------
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0.101-alpine3.14 AS rgcompare_publish_nuget
+FROM mcr.microsoft.com/dotnet/sdk:6.0.301-alpine3.14 AS rgcompare_publish_nuget
 
 WORKDIR /app
 
